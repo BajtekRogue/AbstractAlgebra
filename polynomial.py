@@ -1,29 +1,51 @@
 
 from functools import cmp_to_key
 from itertools import combinations
+from typing import Union
 from monomialOrders import lex_order, multiply_monomials
-from fraction import Fraction
+from fraction import RationalNumber
 
 class Polynomial:
     
+    field = RationalNumber
+    supported_fields = (RationalNumber, float, complex)
+    number_of_variables = 3
     variables = ('x', 'y', 'z')
     variance_from_zero_tolerance = 0.0001
     use_indexing = False
     
-    def __init__(self, coefficients: dict = None) -> None:
-        self.coefficients = coefficients if coefficients is not None else {}
-        self.remove_zero_coefficients()
+    def __init__(self, coefficients: dict = None, strict = False) -> None:
+        if coefficients is None:
+            coefficients = {}
+            
+        self.coefficients = {}
+        
+        for monomial, coefficient in coefficients.items():
+            if isinstance(coefficient, self.field):
+                self.coefficients[monomial] = coefficient
+            else:
+                self.coefficients[monomial] = self.field(coefficient)
+            
+        self.remove_zero_coefficients() #remove zero coefficients
+        
+        if strict:
+            self.check_if_valid_polynomial() #check if the polynomial is valid, by deafult user takes care of that
         
         
     def __str__(self) -> str:
         if len(self.coefficients) == 0:
             return '0'
-        
-        self.sort_coefficients()
+
+        self.sort_coefficients() #sort coefficients according to current lex order
                 
         def to_superscript(num):
             superscripts = {'0': '⁰','1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹'}
             return ''.join(superscripts[digit] for digit in str(num))
+        
+        def to_subscript(num):
+            subscripts = {'0': '₀','1': '₁', '2': '₂', '3': '₃', '4': '₄', '5': '₅', '6': '₆', '7': '₇', '8': '₈', '9': '₉'}
+            return ''.join(subscripts[digit] for digit in str(num))
+        
         
         result = ''
         if not self.use_indexing and len(list(self.coefficients.keys())[0]) > len(self.variables):
@@ -38,14 +60,16 @@ class Polynomial:
             else:
                 result += ' - '
             
-            if (coefficient != 1 and coefficient != -1) or monomial == (0,) * self.number_of_variables():
+            if isinstance(coefficient, complex):
+                result += f'{coefficient}'
+            elif (coefficient != 1 and coefficient != -1) or monomial == (0,) * self.number_of_variables:
                 result += f'{abs(coefficient)}*'
                 
             for i, power in enumerate(monomial):
                 if power == 0:
                     continue
                 elif self.use_indexing:
-                    result += f'x{i+1}'
+                    result += f'x{to_subscript(i + 1)}'
                 else:
                     result += f'{self.variables[i]}'
                 
@@ -61,11 +85,11 @@ class Polynomial:
             return result[1:]
 
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self.__str__()
     
     
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         p = self - other
         return p.is_zero()
     
@@ -74,11 +98,11 @@ class Polynomial:
         return not self.__eq__(other)
     
     
-    def __pos__(self):
+    def __pos__(self) -> "Polynomial":
         return self
     
     
-    def __neg__(self):
+    def __neg__(self) -> "Polynomial":
         result = {}
         for monomial, coefficient in self.coefficients.items():
             result[monomial] = -coefficient
@@ -86,7 +110,7 @@ class Polynomial:
         return Polynomial(result)
     
     
-    def __add__(self, other):
+    def __add__(self, other) -> "Polynomial":
         result = {}
         
         for monomial, coefficient in self.coefficients.items():
@@ -99,40 +123,40 @@ class Polynomial:
                 else:
                     result[monomial] = coefficient
         
-        elif isinstance(other, (int, float, complex, Fraction)):
-            if (0,) * self.number_of_variables() in result:
-                result[(0,) * self.number_of_variables()] += other
+        elif isinstance(other, (int, float, complex, RationalNumber)):
+            if (0,) * self.number_of_variables in result:
+                result[(0,) * self.number_of_variables] += other
             else:
-                result[(0,) * self.number_of_variables()] = other
+                result[(0,) * self.number_of_variables] = other
         else:
             return NotImplemented
         
         return Polynomial(result)
     
     
-    def __radd__(self, other):
+    def __radd__(self, other) -> "Polynomial":
         return self.__add__(other)
 
 
-    def __iadd__(self, other):
+    def __iadd__(self, other) -> "Polynomial":
         self = self + other
         return self
 
 
-    def __sub__(self, other):
+    def __sub__(self, other) -> "Polynomial":
         return self + (-other)
     
     
-    def __rsub__(self, other):
+    def __rsub__(self, other) -> "Polynomial":
         return -self + other
     
     
-    def __isub__(self, other):
+    def __isub__(self, other) -> "Polynomial":
         self += -other
         return self
     
     
-    def __mul__(self, other):
+    def __mul__(self, other) -> "Polynomial":
         result = {}
         
         if isinstance(other, Polynomial):
@@ -146,7 +170,7 @@ class Polynomial:
                     else:
                         result[new_monomial] = new_coefficient
                         
-        elif isinstance(other, (int, float, complex, Fraction)):
+        elif isinstance(other, (int, float, complex, RationalNumber)):
             for monomial, coefficient in self.coefficients.items():
                 result[monomial] = coefficient * other
         else:
@@ -155,24 +179,24 @@ class Polynomial:
         return Polynomial(result)
         
     
-    def __rmul__(self, other):
+    def __rmul__(self, other) -> "Polynomial":
         return self * other
     
     
-    def __imul__(self, other):
+    def __imul__(self, other) -> "Polynomial":
         self = self * other
         return self
     
     
-    def __pow__(self, exponent):
+    def __pow__(self, exponent) -> "Polynomial":
         if not isinstance(exponent, int) or exponent < 0:
             raise TypeError(f"Exponentiation is only supported with natural exponents")
 
         if exponent == 0:
-            return Polynomial({(0,) * self.number_of_variables(): 1})
+            return Polynomial({(0,) * self.number_of_variables: 1})
 
 
-        result = Polynomial({(0,) * self.number_of_variables(): 1})
+        result = Polynomial({(0,) * self.number_of_variables: 1})
         base = self
 
         while exponent > 0:
@@ -184,16 +208,9 @@ class Polynomial:
         return result
     
     
-    def __ipow__(self, exponent):
+    def __ipow__(self, exponent) -> "Polynomial":
         self = self ** exponent
         return self
-    
-    
-    def number_of_variables(self):
-        if len(self.coefficients) == 0:
-            return 0
-        else:
-            return len(list(self.coefficients.keys())[0])
     
     
     def total_degree(self) -> int:
@@ -205,7 +222,6 @@ class Polynomial:
             max_sum = max(max_sum, sum(monomial))
         
         return max_sum
-    
     
     
     def leading_monomial(self, monomial_order = lex_order) -> tuple:
@@ -227,7 +243,7 @@ class Polynomial:
             return self.coefficients[self.leading_monomial(monomial_order)]
     
     
-    def evaluate(self, point: tuple):
+    def evaluate(self, point: tuple) -> Union[RationalNumber, float, complex]:
         result = 0
         for monomial, coefficient in self.coefficients.items():
             term = coefficient
@@ -248,7 +264,7 @@ class Polynomial:
             return True
 
     
-    def remove_zero_coefficients(self):
+    def remove_zero_coefficients(self) -> None:
         coefficients_to_remove = []
         
         for monomial, coefficient in self.coefficients.items():
@@ -262,7 +278,7 @@ class Polynomial:
             self.coefficients = {}
     
     
-    def sort_coefficients(self, monomial_order=lex_order):
+    def sort_coefficients(self, monomial_order=lex_order) -> None:
 
         def monomial_order_to_key(alpha: tuple, beta: tuple) -> int:
             if monomial_order(alpha, beta):
@@ -280,13 +296,11 @@ class Polynomial:
         number_of_variables = len(list(self.coefficients.keys())[0]) if len(self.coefficients) > 0 else 0
 
         try:
-            for monomial, coefficient in self.coefficients.items():
+            for monomial in self.coefficients.keys():
                 if not isinstance(monomial, tuple):
                     raise ValueError('Monomials must be tuples')
                 elif not all(isinstance(power, int) for power in monomial) or not all(power >= 0 for power in monomial):
                     raise ValueError('All monomial powers must be natural numbers')
-                elif not isinstance(coefficient, (int, float, complex, Fraction)):
-                    raise ValueError('All coefficients must be integers, floats or complex numbers')
                 elif len(monomial) != number_of_variables:
                     raise ValueError('All monomials must have the same number of variables')
                 
@@ -296,7 +310,7 @@ class Polynomial:
         return True
     
 
-    def partial_derivative(self, variable):
+    def partial_derivative(self, variable) -> "Polynomial":
         if self.is_zero():
             return Polynomial()
         
@@ -305,7 +319,7 @@ class Polynomial:
         else:
             index = variable
         
-        if index < 0 or index >= self.number_of_variables():
+        if index < 0 or index >= self.number_of_variables:
             return Polynomial()
         
         result = {}
@@ -324,7 +338,7 @@ class Polynomial:
 
 
     @staticmethod
-    def power_sum_polynomial(number_of_variables: int, degree: int):
+    def power_sum_polynomial(number_of_variables: int, degree: int) -> "Polynomial":
         dict = {}
         for i in range(number_of_variables):
             monomial = tuple(degree if i == j else 0 for j in range(number_of_variables))
@@ -334,7 +348,7 @@ class Polynomial:
     
     
     @staticmethod
-    def elementary_symetric_polynomial(number_of_variables: int, degree: int):
+    def elementary_symetric_polynomial(number_of_variables: int, degree: int) -> "Polynomial":
         if degree <= 0 or degree > number_of_variables:
             return Polynomial()
         

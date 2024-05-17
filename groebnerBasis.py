@@ -47,6 +47,7 @@ def syzygy(f: Polynomial, g: Polynomial, monomial_order = lex_order) -> Polynomi
     return a * f - b * g
 
 
+# Buchberger's algorithm
 def extend_to_groebner_basis(Basis: list[Polynomial], monomial_order = lex_order) -> list[Polynomial]:
     G = list(Basis)
     while True:
@@ -70,6 +71,7 @@ def is_in_leading_terms_ideal(f: Polynomial, G: list[Polynomial], monomial_order
     return False
 
 
+# Reduces a Groebner basis to a minimal Groebner basis
 def reduce_groebner_basis(G: list[Polynomial], monomial_order = lex_order, normalize_coefficients = True) -> list[Polynomial]:
     H = list(G)
     for g in G:
