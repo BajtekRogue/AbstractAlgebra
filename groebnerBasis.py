@@ -1,7 +1,7 @@
 import copy
 from polynomial import Polynomial
 from monomialOrders import axis_order, divide_monomials, least_common_multiple, lex_order
-
+from tqdm import tqdm
 
 def polynomial_reduce(f: Polynomial, G: list[Polynomial], monomial_order = lex_order) -> tuple[list[Polynomial], Polynomial]:
 
@@ -50,9 +50,13 @@ def syzygy(f: Polynomial, g: Polynomial, monomial_order = lex_order) -> Polynomi
 # Buchberger's algorithm
 def extend_to_groebner_basis(Basis: list[Polynomial], monomial_order = lex_order) -> list[Polynomial]:
     G = list(Basis)
+    q = 0
     while True:
-        H = list(G)    
-        for i in range(len(G)):
+        H = list(G)  
+        q += 1  
+        print(f'Iteration {q}, polynomials {len(H)}')
+        print(H)
+        for i in tqdm(range(len(G))):
             for j in range(i + 1, len(G)):
                 _, r = polynomial_reduce(syzygy(G[i], G[j], monomial_order), G)
                 if not r.is_zero():

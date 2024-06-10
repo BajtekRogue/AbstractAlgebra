@@ -4,11 +4,12 @@ from itertools import combinations
 from typing import Union
 from monomialOrders import lex_order, multiply_monomials
 from fraction import RationalNumber
+from galoisField import GaloisField
 
 class Polynomial:
     
     field = RationalNumber
-    supported_fields = (RationalNumber, float, complex)
+    supported_fields = (RationalNumber, float, complex, GaloisField)
     number_of_variables = 3
     variables = ('x', 'y', 'z')
     variance_from_zero_tolerance = 0.0001
@@ -55,7 +56,7 @@ class Polynomial:
             if isinstance(coefficient, float) and coefficient.is_integer():
                 coefficient = int(coefficient)
 
-            if isinstance(coefficient, complex) or coefficient > 0:
+            if isinstance(coefficient, (complex, GaloisField)) or coefficient > 0:
                 result += ' + '
             else:
                 result += ' - '
@@ -123,7 +124,7 @@ class Polynomial:
                 else:
                     result[monomial] = coefficient
         
-        elif isinstance(other, (int, float, complex, RationalNumber)):
+        elif isinstance(other, (int, float, complex, RationalNumber, GaloisField)):
             if (0,) * self.number_of_variables in result:
                 result[(0,) * self.number_of_variables] += other
             else:
@@ -170,7 +171,7 @@ class Polynomial:
                     else:
                         result[new_monomial] = new_coefficient
                         
-        elif isinstance(other, (int, float, complex, RationalNumber)):
+        elif isinstance(other, (int, float, complex, RationalNumber, GaloisField)):
             for monomial, coefficient in self.coefficients.items():
                 result[monomial] = coefficient * other
         else:
@@ -243,7 +244,7 @@ class Polynomial:
             return self.coefficients[self.leading_monomial(monomial_order)]
     
     
-    def evaluate(self, point: tuple) -> Union[RationalNumber, float, complex]:
+    def evaluate(self, point: tuple) -> Union[RationalNumber, float, complex, GaloisField]:
         result = 0
         for monomial, coefficient in self.coefficients.items():
             term = coefficient
