@@ -1,6 +1,6 @@
 import copy
-from polynomial import Polynomial
-from monomialOrders import axis_order, divide_monomials, least_common_multiple, lex_order
+from AbstractAlgebra.polynomial import Polynomial
+from AbstractAlgebra.monomialOrders import axis_order, divide_monomials, least_common_multiple, lex_order
 from tqdm import tqdm
 
 def polynomial_reduce(f: Polynomial, G: list[Polynomial], monomial_order = lex_order) -> tuple[list[Polynomial], Polynomial]:
@@ -52,8 +52,7 @@ def extend_to_groebner_basis(Basis: list[Polynomial], monomial_order = lex_order
     G = list(Basis)
     while True:
         H = list(G)  
-        q += 1  
-        for i in tqdm(range(len(G))):
+        for i in range(len(G)):
             for j in range(i + 1, len(G)):
                 _, r = polynomial_reduce(syzygy(G[i], G[j], monomial_order), G)
                 if not r.is_zero():

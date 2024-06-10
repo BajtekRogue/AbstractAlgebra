@@ -2,9 +2,9 @@
 from functools import cmp_to_key
 from itertools import combinations
 from typing import Union
-from monomialOrders import lex_order, multiply_monomials
-from fraction import RationalNumber
-from galoisField import GaloisField
+from AbstractAlgebra.monomialOrders import lex_order, multiply_monomials
+from AbstractAlgebra.fraction import RationalNumber
+from AbstractAlgebra.galoisField import GaloisField
 
 class Polynomial:
     
