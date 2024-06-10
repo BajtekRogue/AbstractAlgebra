@@ -11,6 +11,7 @@ supported_fields = (RationalNumber, float, complex, GaloisField)
 - float $\mathbb{R}$
 - complex $\mathbb{C}$
 - GaloisField $\mathbb{F_p}$
+
 to choose prime $p$ for the finite field use
 ```python
 GaloisField.prime = 65537
