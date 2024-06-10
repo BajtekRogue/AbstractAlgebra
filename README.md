@@ -7,14 +7,14 @@ Available Fields:
 ```python
 supported_fields = (RationalNumber, float, complex, GaloisField)
 ```
-to choose prime $p$ for the finite field use
-```python
-GaloisField.prime = 65537
-```
 - RationalNumber $\mathbb{Q}$
 - float $\mathbb{R}$
 - complex $\mathbb{C}$
 - GaloisField $\mathbb{F_p}$
+to choose prime $p$ for the finite field use
+```python
+GaloisField.prime = 65537
+```
 ## Number of Variables
 Set the number of variables for the polynomials. The default number is $3$.
 ```python
