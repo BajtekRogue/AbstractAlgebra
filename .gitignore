@@ -1,0 +1,32 @@
+# Ignore Python compiled files
+__pycache__/
+*.pyc
+
+# Ignore virtual environment directory
+venv/
+
+# Ignore macOS system files
+.DS_Store
+
+# Ignore other system files
+Thumbs.db
+
+# Ignore IDE/editor config files
+.vscode/
+.idea/
+
+# Ignore logs
+*.log
+
+# Ignore temporary files
+*.tmp
+
+# Ignore node_modules (for Node.js projects)
+node_modules/
+
+# Ignore build output
+dist/
+build/
+
+# Ignore secret files
+.env
