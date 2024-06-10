@@ -1,15 +1,18 @@
 ## Field
-You can choose the field over which the polynomial is defined. The default field is the set of rational numbers, Q. 
+You can choose the field over which the polynomial is defined. The default field is the set of rational numbers, $\mathbb{Q}$. 
 ```python
 Polynomial.field = RationalNumber
 ```
 Available Fields:
--RationalNumber $\mathbb{Q}$
--RealNumber $\mathbb{R}$
--ComplexNumber $\mathbb{C}$
--GaloisField(p) $\mathbb{F_p}$
+```python
+supported_fields = (RationalNumber, float, complex, GaloisField)
+```
+- RationalNumber $\mathbb{Q}$
+- float $\mathbb{R}$
+- complex $\mathbb{C}$
+- GaloisField $\mathbb{F_p}$
 ## Number of Variables
-Set the number of variables for the polynomials. The default number is 3.
+Set the number of variables for the polynomials. The default number is $3$.
 ```python
 Polynomial.number_of_variables = 5
 ```
@@ -19,15 +22,16 @@ You can specify the names of the variables
 Polynomial.variables = ('x', 'y', 'z')
 ```
 ## Use Indexed Variables
-To have x1, x2, ..., xn set
+To have $x_1 > x_2 > \ldots > x_n$ set
 ```python
 Polynomial.use_indexing = True 
 ```
 ## Lexicographic Order
-Set the permutation for lexicographic order. For example, [1, 0, 2] corresponds to $y > x > z$.
+Set the permutation for lexicographic order. For example 
 ```python
 set_lex_order_permutation([1, 0, 2])
 ```
+corresponds to $y > x > z$.
 ## Indexed Lexicographic Order
 To set the permutation for variables in indexed order $x_1 > x_2 > \ldots > x_n$, use:
 ```python
@@ -49,7 +53,7 @@ To extend set G to a gröbner basis use
 get_groebner_basis(G)
 ```
 ## Special polynmials
-Power sum $p_k(x_1, \ldots x_n) = x_1^k + \ldots x_n^k$
+Power sum $p_k(x_1, \ldots x_n) = x_1^k + \ldots + x_n^k$
 ```python
 power_sum_polynomial(n, k)
 ```
