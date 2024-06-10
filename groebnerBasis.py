@@ -50,12 +50,9 @@ def syzygy(f: Polynomial, g: Polynomial, monomial_order = lex_order) -> Polynomi
 # Buchberger's algorithm
 def extend_to_groebner_basis(Basis: list[Polynomial], monomial_order = lex_order) -> list[Polynomial]:
     G = list(Basis)
-    q = 0
     while True:
         H = list(G)  
         q += 1  
-        print(f'Iteration {q}, polynomials {len(H)}')
-        print(H)
         for i in tqdm(range(len(G))):
             for j in range(i + 1, len(G)):
                 _, r = polynomial_reduce(syzygy(G[i], G[j], monomial_order), G)
