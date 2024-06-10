@@ -7,6 +7,10 @@ Available Fields:
 ```python
 supported_fields = (RationalNumber, float, complex, GaloisField)
 ```
+to choose prime $p$ for the finite field use
+```python
+GaloisField.prime = 65537
+```
 - RationalNumber $\mathbb{Q}$
 - float $\mathbb{R}$
 - complex $\mathbb{C}$
@@ -48,7 +52,7 @@ Available monomial orders are:
 lex_order, graded_lex_order, reverse_graded_lex_order
 ```
 ## Gröbner basis
-To extend set G to a gröbner basis use 
+Given $I=\langle G\rangle$ extend $G$ t a gröbner basis
 ```python
 get_groebner_basis(G)
 ```
