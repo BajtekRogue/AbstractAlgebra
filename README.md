@@ -27,7 +27,7 @@ You can specify the names of the variables
 Polynomial.variables = ('x', 'y', 'z')
 ```
 ## Use Indexed Variables
-To have $x_1 > x_2 > \ldots > x_n$ set
+To have $x_1 , x_2 , \ldots , x_n$ set
 ```python
 Polynomial.use_indexing = True 
 ```
@@ -43,9 +43,9 @@ To set the permutation for variables in indexed order $x_1 > x_2 > \ldots > x_n$
 set_lex_order_permutation(n)
 ```
 ## Polynomial representation
-Polynomials are stored as dictionaries where the key is a tuple representing the exponent and the value is the coefficient associated with it. For example, the polynomial $-7x^3yz^5$ is represented as:
+Polynomials are stored as dictionaries where the key is a tuple representing the exponent and the value is the coefficient associated with it. For example, the polynomial $-7x^3yz^5+4xy$ is represented as:
 ```python
-{(3, 2, 5): -7} 
+{(3, 2, 5): -7, (1, 1, 0): 4} 
 ```
 ## Monomial orders
 Available monomial orders are:
@@ -53,16 +53,16 @@ Available monomial orders are:
 lex_order, graded_lex_order, reverse_graded_lex_order
 ```
 ## Gröbner basis
-Given $I=\langle G\rangle$ extend $G$ t a gröbner basis
+Given $I=\langle G\rangle$ extend $G$ to a gröbner basis
 ```python
 get_groebner_basis(G)
 ```
-## Special polynmials
-Power sum $p_k(x_1, \ldots x_n) = x_1^k + \ldots + x_n^k$
+## Special polynomials
+Power sum $x_1^k + \ldots + x_n^k$
 ```python
 power_sum_polynomial(n, k)
 ```
-Elementary symmetric polynomial $e_k(x_1, \ldots x_n)$
+Elementary symmetric polynomial $e_k(x_1, \ldots, x_n)$
 ```python
 elementary_symetric_polynomial(n, k)
 ```
